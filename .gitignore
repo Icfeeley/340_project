@@ -1,2 +1,4 @@
 # ignore .a and .o files
 *.[oa]
+# ignore temp files
+*~
