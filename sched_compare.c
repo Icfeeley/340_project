@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
   // create an array of numprocs randomly generate (arrival time, service time)
   procs = procs_random_create(numprocs, seed, INTER_ARRIVAL_TIME, SERVICE_TIME);
-  
+
   // Uncomment the next block of code and comment the line above if
   // you want to read the input from a file instead of generating
   // random values. This can be useful for debugging your code with
@@ -47,6 +47,65 @@ int main(int argc, char** argv)
      algorithms in order for your main to be more readable and
      manageable.
   */
+
+  double fcfs_value_function(*proc_t proc){
+    return proc->arrival_time;
+  }
+
+  double spn_value_function(*proc_t proc){
+    return proc->service_time;
+  }
+
+  double hrrn_value_function(*proc_t proc){
+    double ratio = (proc->wait_time / proc->service_time) + 1;
+    return ratio;
+  }
+
+  void update_heap(*proc_t heap){
+    int i;
+
+    for (i = 1;  i < num_procs+1; i++) {
+      if (i == 1) {
+        heap[i]->service_time--;
+        if (heap[i]->service_time <= 0){
+          heap = heap_deletemin();
+        }
+      }
+      else {
+        heap[i]->wait_time--;
+      }
+    }
+  }
+
+
+ //  *updat
+ //  void upadte_heap(heap){
+ // if heap[0].servicetime ==0
+ // 	delete min heap...
+ // (do this only for hrrn)
+ // for i in heap:
+ // 	if heap[i].waittime ==0
+ // 		servicetime--
+ // 	else
+ // 		heap[i] waittime --
+ //  }
+ //
+ //  update_proc_t(*proc_t){
+ // if proc_t[0].servicetime ==0
+ // 	&proc_t += sizeof(proc)
+ //  }
+ //
+ //  init heap... // init proc
+ // for (i=0; i < simiutaion duration; i++){ // while (num_procs != 0..
+ // hrrn(heap, proc_t);
+ // updateheap(heap)
+ //  }
+ //
+ // for (i=0; i< simulation_duration; i++){
+ // other function(proc_t);
+ // updateproc_t()
+ // }
+
 
   free(procs);   // procs array was dynamically allocated, so free up
 
