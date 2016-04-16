@@ -37,13 +37,26 @@ proc_t *heap_top()
   return heapsize > 0 ? heap[1] : NULL;
 }
 
+double fcfs_value_function(proc_t *elem){
+  return elem->arrival_time;
+}
+
+double spn_value_function(proc_t *elem){
+  return elem->service_time;
+}
+
+double hrrn_value_function(proc_t *elem){
+  double ratio = ((float) elem->service_time * (float) elem->arrival_time / elem->wait_time + elem->service_time );
+  return ratio;
+}
+
 int heap_insert(proc_t *elem)
 {
   if (++heapsize > max_heapsize)
     return 0;
 
   heap[heapsize] = elem; /* Insert in the last place */
-  
+
   /* Adjust its position */
   int pos = heapsize;
   while (proc_val(heap[pos/2]) > proc_val(elem)) {
@@ -71,13 +84,13 @@ proc_t *heap_deletemin()
 
   min_elem = heap[1];
   last_elem = heap[heapsize--];
-  
+
   for (parent = 1; parent*2 <= heapsize ; parent = child) {
-    
+
     /* child is the index of the element which is minimum among both
        the children.  Indexes of children are i*2 and i*2 + 1*/
     child = parent*2;
-    
+
     /* child != heapsize because heap[heapsize+1] does not exist,
        which means it has only one child */
     if (child != heapsize &&
@@ -94,9 +107,9 @@ proc_t *heap_deletemin()
       break;
     }
   }
-  
+
   heap[parent] = last_elem;
-  
+
   return min_elem;
 }
 
@@ -127,8 +140,33 @@ void heap_age(double amount)
 void heap_age(double amount)
 {
   int i;
-  
+
   for (i = 1; i <= heapsize; i++) {
     heap[i]->wait_time += amount;
   }
+}
+
+void heap_update(double *total_wait, double *total_responce_time){
+  // decrements service_time of current process
+  double wait = 0;
+  if (heap[1]->service_time <= 0){
+    // printf("%f\n", heap[1]->wait_time);
+    *total_responce_time += heap[1]->wait_time;
+    heap_deletemin();
+    if (heap_size() != 0) {
+      *total_wait += heap[1]->wait_time;
+    }
+  }
+  // printf("st=%.0f\t wt=%.0f\tat=%.0f\n", heap[1]->service_time, heap[1]->wait_time, heap[1]->arrival_time);
+  heap[1]->service_time -= 1;
+}
+
+void print_heap(){
+  int i;
+  printf("(service_time, wait_time, arrival_time, proc_val):\t");
+  for(i = 1; i < heapsize+1; i++){
+    printf("(%.0f, %.0f, %.0f, %.0f)\t",
+     heap[i]->service_time, heap[i]->wait_time, heap[i]->arrival_time, proc_val(heap[i]));
+  }
+  printf("\n");
 }

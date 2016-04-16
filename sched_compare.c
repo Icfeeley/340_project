@@ -8,6 +8,92 @@
 #define INTER_ARRIVAL_TIME 3   // mean poisson dist
 #define SERVICE_TIME       5   // mean poisson dist
 
+void fcfs_simulation(proc_t *procs, int numprocs){
+  double (*fcfs_value_functionPtr)(proc_t *);
+  fcfs_value_functionPtr = &fcfs_value_function;
+  heap_init(numprocs, fcfs_value_functionPtr);
+  double time_counter = 0;
+  double total_wait = 0;
+  double total_turnaround_time = 0;
+  int procs_started = 0;
+  while (heap_size() != 0 || procs_started < numprocs) {
+    int i;
+    for (i = 0; i < numprocs; i++){
+      if (procs[i].arrival_time == time_counter) {
+        heap_insert(&procs[i]);
+        procs_started++;
+      }
+    }
+    // print_heap();
+    heap_age(1);
+    heap_update(&total_wait, &total_turnaround_time);
+    time_counter++;
+  }
+
+  heap_free();
+
+  float average_wait = (float) total_wait/ numprocs;
+  float average_turnaround_time = (float) total_turnaround_time / numprocs;
+  printf("FCFS\t%f\t%f\n",average_wait, average_turnaround_time);
+}
+
+void spn_simulation(proc_t *procs, int numprocs){
+  double (*spn_value_functionPtr)(proc_t *);
+  spn_value_functionPtr = &spn_value_function;
+  heap_init(numprocs, spn_value_functionPtr);
+  double time_counter = 0;
+  double total_wait = 0;
+  double total_turnaround_time = 0;
+  int procs_started = 0;
+  while (heap_size() != 0 || procs_started < numprocs) {
+    int i;
+    for (i = 0; i < numprocs; i++){
+      if (procs[i].arrival_time == time_counter) {
+        heap_insert(&procs[i]);
+        procs_started++;
+      }
+    }
+    // print_heap();
+    heap_age(1);
+    heap_update(&total_wait, &total_turnaround_time);
+    time_counter++;
+  }
+  heap_free();
+  float average_wait = (float) total_wait/ numprocs;
+  float average_turnaround_time = (float) total_turnaround_time / numprocs;
+  printf("SPN\t%f\t%f\n",average_wait, average_turnaround_time);
+}
+
+void hrrn_simulation(proc_t *procs, int numprocs){
+  double (*hrrn_value_functionPtr)(proc_t *);
+  hrrn_value_functionPtr = &hrrn_value_function;
+  heap_init(numprocs, hrrn_value_functionPtr);
+  double time_counter = 0;
+  int procs_started = 0;
+  double total_wait = 0;
+  double total_turnaround_time = 0;
+  while (heap_size() != 0 || procs_started < numprocs) {
+    int i;
+    for (i = 0; i < numprocs; i++){
+      if (procs[i].arrival_time == time_counter) {
+        heap_insert(&procs[i]);
+        procs_started++;
+      }
+    }
+    heap_age(1);
+    heap_update(&total_wait, &total_turnaround_time);
+    // print_heap();
+    time_counter++;
+  }
+  heap_free();
+  // printf("%f\n", total_wait);
+  // printf("%f\n", total_turnaround_time);
+  float average_wait = (float) total_wait/ numprocs;
+  float average_turnaround_time = (float) total_turnaround_time / numprocs;
+  printf("HRRN\t%f\t%f\n",average_wait, average_turnaround_time);
+}
+
+
 int main(int argc, char** argv)
 {
   int numprocs, seed;
@@ -22,7 +108,7 @@ int main(int argc, char** argv)
   seed = atoi(argv[2]);
 
   // create an array of numprocs randomly generate (arrival time, service time)
-  procs = procs_random_create(numprocs, seed, INTER_ARRIVAL_TIME, SERVICE_TIME);
+  // procs = procs_random_create(numprocs, seed, INTER_ARRIVAL_TIME, SERVICE_TIME);
 
   // Uncomment the next block of code and comment the line above if
   // you want to read the input from a file instead of generating
@@ -30,12 +116,12 @@ int main(int argc, char** argv)
   // known inputs.  The file, "book_example.txt", contains an example
   // from the book.
 
-  /*
+
   if ((procs = procs_read("book_example.txt", &numprocs)) == NULL) {
     fprintf(stderr, "Error reading procs array\n");
     return 2;
   }
-  */
+
 
   printf("procs array:\n");
   printf("(arrival time, service time)\n");
@@ -47,65 +133,10 @@ int main(int argc, char** argv)
      algorithms in order for your main to be more readable and
      manageable.
   */
-
-  double fcfs_value_function(*proc_t proc){
-    return proc->arrival_time;
-  }
-
-  double spn_value_function(*proc_t proc){
-    return proc->service_time;
-  }
-
-  double hrrn_value_function(*proc_t proc){
-    double ratio = (proc->wait_time / proc->service_time) + 1;
-    return ratio;
-  }
-
-  void update_heap(*proc_t heap){
-    int i;
-
-    for (i = 1;  i < num_procs+1; i++) {
-      if (i == 1) {
-        heap[i]->service_time--;
-        if (heap[i]->service_time <= 0){
-          heap = heap_deletemin();
-        }
-      }
-      else {
-        heap[i]->wait_time--;
-      }
-    }
-  }
-
-
- //  *updat
- //  void upadte_heap(heap){
- // if heap[0].servicetime ==0
- // 	delete min heap...
- // (do this only for hrrn)
- // for i in heap:
- // 	if heap[i].waittime ==0
- // 		servicetime--
- // 	else
- // 		heap[i] waittime --
- //  }
- //
- //  update_proc_t(*proc_t){
- // if proc_t[0].servicetime ==0
- // 	&proc_t += sizeof(proc)
- //  }
- //
- //  init heap... // init proc
- // for (i=0; i < simiutaion duration; i++){ // while (num_procs != 0..
- // hrrn(heap, proc_t);
- // updateheap(heap)
- //  }
- //
- // for (i=0; i< simulation_duration; i++){
- // other function(proc_t);
- // updateproc_t()
- // }
-
+  printf("type\twait\tturnaround\n");
+  // fcfs_simulation(procs, numprocs);
+  // spn_simulation(procs, numprocs);
+  hrrn_simulation(procs, numprocs);
 
   free(procs);   // procs array was dynamically allocated, so free up
 
