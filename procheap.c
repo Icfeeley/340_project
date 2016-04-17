@@ -148,7 +148,6 @@ void heap_age(double amount)
 
 void heap_update(double *total_wait, double *total_responce_time){
   // decrements service_time of current process
-  double wait = 0;
   if (heap[1]->service_time <= 0){
     // printf("%f\n", heap[1]->wait_time);
     *total_responce_time += heap[1]->wait_time;

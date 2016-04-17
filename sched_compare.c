@@ -26,7 +26,9 @@ void fcfs_simulation(proc_t *procs, int numprocs){
     }
     // print_heap();
     heap_age(1);
-    heap_update(&total_wait, &total_turnaround_time);
+    if(heap_size() != 0){
+        heap_update(&total_wait, &total_turnaround_time);
+    }
     time_counter++;
   }
 
@@ -55,7 +57,9 @@ void spn_simulation(proc_t *procs, int numprocs){
     }
     // print_heap();
     heap_age(1);
-    heap_update(&total_wait, &total_turnaround_time);
+    if(heap_size() != 0){
+        heap_update(&total_wait, &total_turnaround_time);
+    }
     time_counter++;
   }
   heap_free();
@@ -75,13 +79,16 @@ void hrrn_simulation(proc_t *procs, int numprocs){
   while (heap_size() != 0 || procs_started < numprocs) {
     int i;
     for (i = 0; i < numprocs; i++){
+      // printf("test\n" );
       if (procs[i].arrival_time == time_counter) {
         heap_insert(&procs[i]);
         procs_started++;
       }
     }
     heap_age(1);
-    heap_update(&total_wait, &total_turnaround_time);
+    if(heap_size() != 0){
+        heap_update(&total_wait, &total_turnaround_time);
+    }
     // print_heap();
     time_counter++;
   }
@@ -108,7 +115,7 @@ int main(int argc, char** argv)
   seed = atoi(argv[2]);
 
   // create an array of numprocs randomly generate (arrival time, service time)
-  // procs = procs_random_create(numprocs, seed, INTER_ARRIVAL_TIME, SERVICE_TIME);
+  procs = procs_random_create(numprocs, seed, INTER_ARRIVAL_TIME, SERVICE_TIME);
 
   // Uncomment the next block of code and comment the line above if
   // you want to read the input from a file instead of generating
@@ -116,11 +123,11 @@ int main(int argc, char** argv)
   // known inputs.  The file, "book_example.txt", contains an example
   // from the book.
 
-
-  if ((procs = procs_read("book_example.txt", &numprocs)) == NULL) {
-    fprintf(stderr, "Error reading procs array\n");
-    return 2;
-  }
+  //
+  // if ((procs = procs_read("book_example.txt", &numprocs)) == NULL) {
+  //   fprintf(stderr, "Error reading procs array\n");
+  //   return 2;
+  // }
 
 
   printf("procs array:\n");
