@@ -27,7 +27,7 @@ void fcfs_simulation(proc_t *procs, int numprocs){
     // print_heap();
     heap_age(1);
     if(heap_size() != 0){
-        heap_update(&total_wait, &total_turnaround_time);
+        heap_update(&total_wait, &total_turnaround_time, time_counter);
     }
     time_counter++;
   }
@@ -58,7 +58,7 @@ void spn_simulation(proc_t *procs, int numprocs){
     // print_heap();
     heap_age(1);
     if(heap_size() != 0){
-        heap_update(&total_wait, &total_turnaround_time);
+        heap_update(&total_wait, &total_turnaround_time, time_counter);
     }
     time_counter++;
   }
@@ -87,7 +87,7 @@ void hrrn_simulation(proc_t *procs, int numprocs){
     }
     heap_age(1);
     if(heap_size() != 0){
-        heap_update(&total_wait, &total_turnaround_time);
+        heap_update(&total_wait, &total_turnaround_time, time_counter);
     }
     // print_heap();
     time_counter++;
@@ -140,10 +140,10 @@ int main(int argc, char** argv)
      algorithms in order for your main to be more readable and
      manageable.
   */
-  printf("type\twait\tturnaround\n");
-  // fcfs_simulation(procs, numprocs);
+  // printf("type\twait\tturnaround\n");
+  fcfs_simulation(procs, numprocs);
   // spn_simulation(procs, numprocs);
-  hrrn_simulation(procs, numprocs);
+  // hrrn_simulation(procs, numprocs);
 
   free(procs);   // procs array was dynamically allocated, so free up
 
